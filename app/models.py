@@ -1,7 +1,8 @@
 
 from datetime import datetime
 #from app import db  this is wrong because it will create circular import
-from __main__ import db
+#from __main__ import db
+from app import db
 
 class User(db.Model):
     id=db.Column(db.Integer,primary_key=True)
