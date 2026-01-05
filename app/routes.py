@@ -1,3 +1,5 @@
+import os
+import secrets
 from flask import render_template,url_for,flash,redirect,request
 from app import app,db,bcrypt
 from app.forms import RegistrationForm,LoginForm ,UpdateForm#we import the forms we created in forms.py so that we can use them in out routes
@@ -64,11 +66,24 @@ def logout():
    logout_user()
    return redirect(url_for('home'))
 
+
+def save_picture(form_picture):
+    random_hex=secrets.token_hex(8) #hex is taken to generate a random filename for the picture
+    _,f_ext=os.path.splitext(form_picture.filename)# the reason for the _ is because we dont need the first value returned by splitext which is the path and _ext is the extension
+    picture_fn=random_hex+f_ext  #basically we r creating a unique filename for the picture by combining the hex and the file extension
+    picture_path=os.path.join(app.root_path,'static/profile_pics',picture_fn)
+    form_picture.save(picture_path)
+
+    return picture_fn
+
 @app.route('/account',methods=['GET','POST'])
 @login_required
 def account():
     form=UpdateForm()
     if form.validate_on_submit():
+        if form.picture.data:
+            picture_file=save_picture(form.picture.data)
+            current_user.image_file=picture_file
         current_user.username=form.username.data
         current_user.email=form.email.data
         db.session.commit()
