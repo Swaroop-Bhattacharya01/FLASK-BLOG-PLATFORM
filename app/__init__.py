@@ -14,5 +14,7 @@ db=SQLAlchemy(app)
 
 bcrypt=Bcrypt(app)
 login_manager=LoginManager(app)
+login_manager.login_view='login'
+login_manager.login_message_category='info'#info represent the category of flask message in bootstrap which is blue
 
 from app import routes  #to avoid circular import we import routes at the end after creating the app instance

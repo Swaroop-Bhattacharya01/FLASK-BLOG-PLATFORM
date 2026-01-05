@@ -1,9 +1,10 @@
-from flask import render_template,url_for,flash,redirect
+from flask import render_template,url_for,flash,redirect,request
 from app import app,db,bcrypt
 from app.forms import RegistrationForm,LoginForm #we import the forms we created in forms.py so that we can use them in out routes
 
 from app.models import User,Post #the reason this is after the db instance is created is because models.py uses the db instance to create the models
-from flask_login import login_user,current_user,logout_user
+from flask_login import login_user,current_user,logout_user,login_required
+
 
 
 
@@ -52,7 +53,8 @@ def login():
        user=User.query.filter_by(email=form.email.data).first() 
        if user and bcrypt.check_password_hash(user.password,form.password.data):#simultaneously checks if user exists and if the password matches
             login_user(user,remember=form.remember.data)
-            return redirect(url_for('home'))
+            next_page=request.args.get('next') #this is to redirect the user to the page they are trying to access before login
+            return redirect(next_page) if next_page else redirect(url_for('home'))
        else:
             flash('Login unsuccessful pls check email and password','danger')
     return render_template('login.html',title='Login',form=form)
@@ -61,3 +63,8 @@ def login():
 def logout():
    logout_user()
    return redirect(url_for('home'))
+
+@app.route('/account')
+@login_required
+def account():
+    return render_template('account.html',title='Account') 
