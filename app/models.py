@@ -2,9 +2,14 @@
 from datetime import datetime
 #from app import db  this is wrong because it will create circular import
 #from __main__ import db
-from app import db
+from app import db,login_manager
+from flask_login import UserMixin #user mixin provides default implementations for the methods that flask login expects user objects to have
 
-class User(db.Model):
+@login_manager.user_loader  #thsi is a callback function that flask login uses to reload the user object from th userid stored inn the session
+def load_user(user_id):
+     return User.query.get(int(user_id))
+
+class User(db.Model,UserMixin):#usermixin is used to add flask login functionality to the suer model
     id=db.Column(db.Integer,primary_key=True)
     username=db.Column(db.String(20),unique=True,nullable=False)
     email=db.Column(db.String(120),unique=True,nullable=False)
