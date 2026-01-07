@@ -8,7 +8,7 @@ from flask_mail import Mail
 app=Flask(__name__)
 
 
-app.config['SECRET_KEY']='bbe58e27522d0f25802798769c99e8b1' #config is used to set secret key for forms because it is required for security purposes
+app.config['SECRET_KEY']=os.environ.get('SECRET_KEY') #config is used to set secret key for forms because it is required for security purposes
 
 app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///site.db'
 #creating a database instance
